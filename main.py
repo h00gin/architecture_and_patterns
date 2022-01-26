@@ -1,18 +1,16 @@
 import views
 from my_wsgi import Application
+from products import products
 
 routes = {
     '/': views.main_page,
-    '/about': views.about_page
+    '/about/': views.about_page,
+    '/contacts/': views.contacts_view
 }
 
 
 def products_controller(request):
-    request['products'] = {
-        'category': 'Shoes',
-        'title': 'Boots',
-        'price': '20 $'
-    }
+    request['products'] = products
 
 
 def secret_front(request):
