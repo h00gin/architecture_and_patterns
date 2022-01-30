@@ -1,16 +1,28 @@
-# This is a sample Python script.
+import views
+from my_wsgi import Application
+from products import products
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+routes = {
+    '/': views.main_page,
+    '/about/': views.about_page,
+    '/contacts/': views.contacts_view
+}
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def products_controller(request):
+    request['products'] = products
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def secret_front(request):
+    request['secret'] = 'some secret'
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+def other_front(request):
+    request['key'] = 'value'
+
+
+application = Application(routes, [products_controller, other_front])
+
+
+# запуск:
+# waitress-serve --listen=*:8000 main:application
