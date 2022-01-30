@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Contacts</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %}Contacts{% endblock %}
+{% block main %}
     <h1>Send message</h1>
     <form method="post">
         <input type="text" name="title" placeholder="Title">
@@ -12,5 +8,4 @@
         <input type="text" name="text" placeholder="Message text">
         <button type="submit">Send</button>
     </form>
-</body>
-</html>
+{% endblock %}
