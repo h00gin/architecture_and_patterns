@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}List of courses{% endblock %}
+{% block main %}
+    <h1>List of courses</h1>
+    <form method="post">
+        <ul>
+            {% for object in objects_list %}
+                <li>
+                    {{ object.name }}
+                    <span><a href="/copy_course/?name={{ object.name }}">скопировать</a></span>
+                </li>
+            {% endfor %}
+        </ul>
+
+    </form>
+{% endblock %}
