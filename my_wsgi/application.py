@@ -53,3 +53,24 @@ class Application:
         else:
             start_response('404 NOT FOUND', [('Content-Type', 'text/html')])
             return [b'404 NOT FOUND']
+
+
+class DebugApplication(Application):
+    def __init__(self, routes, fronts):
+        self.application = Application(routes, fronts)
+        super().__init__(routes, fronts)
+
+    def __call__(self, environ, start_response):
+        print('Debug')
+        print(environ)
+        return self.application(environ, start_response)
+
+
+class FakeApplication(Application):
+    def __init__(self, routes, fronts):
+        self.application = Application(routes, fronts)
+        super().__init__(routes, fronts)
+
+    def __call__(self, environ, start_response):
+        start_response('200 JR', [('Content-Type', 'text/html')])
+        return [b'Hello from FAKE!']

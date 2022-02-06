@@ -1,6 +1,7 @@
 import views
 
 from my_wsgi import Application
+from my_wsgi.application import DebugApplication, FakeApplication
 from products import products
 
 
@@ -30,6 +31,8 @@ def other_front(request):
 
 
 application = Application(routes, [products_controller, other_front])
+# application = DebugApplication(routes, [products_controller, other_front])
+# application = FakeApplication(routes, [products_controller, other_front])
 
 
 # запуск:
