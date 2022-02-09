@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Students list{% endblock %}
+{% block main %}
+    <h2>Students list</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Student</th>
+            <th scope="col">Courses</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for object in objects_list %}
+            <tr>
+                <td>{{ object.name }}</td>
+                <td>
+                    <ul>
+                        {% if object.courses|count == 0 %}
+                            <a href="/add_student/">Enroll in a course</a>
+                        {% else %}
+                            {% for course in object.courses %}
+                                <li>{{ course.name }}</li>
+                            {% endfor %}
+                            <li><a href="/add_student/">Add</a></li>
+                        {% endif %}
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -72,5 +72,5 @@ class FakeApplication(Application):
         super().__init__(routes, fronts)
 
     def __call__(self, environ, start_response):
-        start_response('200 JR', [('Content-Type', 'text/html')])
+        start_response('200 OK', [('Content-Type', 'text/html')])
         return [b'Hello from FAKE!']
