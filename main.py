@@ -7,10 +7,11 @@ from products import products
 
 routes = {
     '/': views.main_page,
-    '/create_category/': views.about_page,
-    '/category_list/': views.about_page,
+    '/create_category/': views.create_category,
+    '/category_list/': views.category_list,
     '/create_course/': views.create_course,
     '/course_list/': views.course_list_page,
+    '/change_course/': views.change_course,
     '/copy_course/': views.copy_course,
     '/create_student/': views.create_student,
     '/student_list/': views.student_list_page,

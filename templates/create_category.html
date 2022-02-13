@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Create category{% endblock %}
+{% block main %}
+    <h1>Create category</h1>
+    <form method="post">
+        <input type="text" name="name" placeholder="Name">
+        <button type="submit">Save</button>
+    </form>
+    <a href="/category_list/">List of categories</a>
+{% endblock %}

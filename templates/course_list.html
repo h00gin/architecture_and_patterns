@@ -8,9 +8,11 @@
                 <li>
                     {{ object.name }}
                     <span><a href="/copy_course/?name={{ object.name }}">copy</a></span>
+                    <span><a href="/change_course/">change</a></span>
+
                 </li>
             {% endfor %}
         </ul>
-
+    <a href="/create_course/">Create course</a>
     </form>
 {% endblock %}

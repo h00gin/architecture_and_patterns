@@ -3,7 +3,8 @@ from patterns.prototype import PrototypeMixin
 
 
 class User:
-    def __init__(self, name, surname, telephone, email):
+    def __init__(self, id, name, surname, telephone, email):
+        self.id = id
         self.name = name
         self.surname = surname
         self.telephone = telephone
@@ -14,11 +15,12 @@ class Teacher(User):
     pass
 
 
-class Student(User):
+class Student(User, Subject):
 
-    def __init__(self, name, surname, telephone, email):
+    def __init__(self, id, name, surname, telephone, email):
         self.courses = []
-        super().__init__(name, surname, telephone, email)
+        self.notify()
+        super().__init__(id, name, surname, telephone, email)
 
 
 class SimpleFactory:
@@ -34,14 +36,37 @@ class UserFactory:
     }
 
     @classmethod
-    def create(cls, type_, name, surname, telephone, email):
-        return cls.types[type_](name, surname, telephone, email)
+    def create(cls, type_, id, name, surname, telephone, email):
+        return cls.types[type_](id, name, surname, telephone, email)
+
+
+class Category:
+    auto_id = 0
+
+    def __getitem__(self, item):
+        return self.courses[item]
+
+    def __init__(self, name, category):
+        self.id = Category.auto_id
+        Category.auto_id += 1
+        self.name = name
+        self.category = category
+        self.courses = []
+
+    def course_count(self):
+        result = len(self.courses)
+        if self.category:
+            result += self.category.course_count()
+        return result
 
 
 class Course(PrototypeMixin, Subject):
 
-    def __init__(self, name):
+    def __init__(self, id, name, category):
+        self.id = id
         self.name = name
+        self.category = category
+        self.category.courses.append(self)
         self.students = []
         super().__init__()
 
@@ -51,7 +76,7 @@ class Course(PrototypeMixin, Subject):
     def add_student(self, student: Student):
         self.students.append(student)
         student.courses.append(self)
-        self.notify()
+        # self.notify()
 
 
 class InteractiveCourse(Course):
@@ -69,8 +94,8 @@ class CourseFactory:
     }
 
     @classmethod
-    def create(cls, type_, name):
-        return cls.types[type_](name)
+    def create(cls, type_, id, name, category):
+        return cls.types[type_](id, name, category)
 
 
 class TrainingSite:
@@ -78,12 +103,22 @@ class TrainingSite:
         self.teachers = []
         self.students = []
         self.courses = []
+        self.categories = []
 
-    def create_user(self, type_, name, surname, telephone, email):
-        return UserFactory.create(type_, name, surname, telephone, email)
+    def create_user(self, type_, id, name, surname, telephone, email):
+        return UserFactory.create(type_, id, name, surname, telephone, email)
 
-    def create_course(self, type_, name):
-        return CourseFactory.create(type_, name)
+    def create_category(self, name, category=None):
+        return Category(name, category)
+
+    def find_category_by_id(self, id):
+        for item in self.categories:
+            if item.id == id:
+                return item
+        raise Exception(f'Нет категории курсов с данным id: {id}')
+
+    def create_course(self, type_, id, name, category):
+        return CourseFactory.create(type_, id, name, category)
 
     def get_course(self, name) -> Course:
         for item in self.courses:

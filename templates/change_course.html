@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Create course{% endblock %}
+{% block main %}
+    <h1>Change course</h1>
+    <form method="post">
+        <div>
+            <label for="course">Course</label>
+            <select class="form" name="course_name" id="course">
+                {% for item in courses %}
+                    <option value="{{ item.name }}">{{ item.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <input type="text" name="new_name" placeholder="New name">
+        </div>
+        <button type="submit">Save</button>
+    </form>
+    <a href="/course_list/">List of courses</a>
+{% endblock %}

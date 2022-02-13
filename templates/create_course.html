@@ -3,7 +3,24 @@
 {% block main %}
     <h1>Create course</h1>
     <form method="post">
-        <input type="text" name="name" placeholder="Name">
+        <div>
+            <input type="text" name="name" placeholder="Name">
+        </div>
+        <div class="mb-3">
+            <select name="category_id">
+                {% if categories|count == 0 %}
+                    <option selected>No categories</option>
+                {% else %}
+                    <option selected>Select category</option>
+                {% endif %}
+                {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            {% if categories|count == 0 %}
+                <a class="nav-link" href="/create_category/">Create category</a>
+            {% endif %}
+        </div>
         <button type="submit">Save</button>
     </form>
     <a href="/course_list/">List of courses</a>
