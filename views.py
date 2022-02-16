@@ -34,8 +34,6 @@ def create_course(request):
         if category_id:
             category = site.find_category_by_id(int(category_id))
             course = site.create_course('record', id, name, category)
-            # course.observers.append(email_notifier)
-            # course.observers.append(sms_notifier)
             site.courses.append(course)
         return '200 OK', render('create_course.html')
     else:
@@ -49,7 +47,7 @@ def change_course(request):
         course_name = data['course_name']
         course = site.get_course(course_name)
         new_name = data['new_name']
-        setattr(course, 'name', new_name)
+        course.change_course(new_name)
     return '200 OK', render('change_course.html', courses=site.courses)
 
 
@@ -92,8 +90,8 @@ def add_student_by_course(request):
         student_name = data['student_name']
         student = site.get_student(student_name)
         course.add_student(student)
-        # course.observers.append(email_notifier)
-        # course.observers.append(sms_notifier)
+        course.attach(sms_notifier)
+        course.attach(email_notifier)
     return '200 OK', render('add_student.html', courses=site.courses, students=site.students)
 
 

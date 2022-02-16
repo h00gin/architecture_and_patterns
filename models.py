@@ -15,11 +15,10 @@ class Teacher(User):
     pass
 
 
-class Student(User, Subject):
+class Student(User, Observer):
 
     def __init__(self, id, name, surname, telephone, email):
         self.courses = []
-        self.notify()
         super().__init__(id, name, surname, telephone, email)
 
 
@@ -76,7 +75,11 @@ class Course(PrototypeMixin, Subject):
     def add_student(self, student: Student):
         self.students.append(student)
         student.courses.append(self)
-        # self.notify()
+
+    def change_course(self, new_name):
+        setattr(self, 'name', new_name)
+        self.notify()
+        return
 
 
 class InteractiveCourse(Course):
@@ -136,10 +139,10 @@ class TrainingSite:
 class SmsNotifier(Observer):
 
     def update(self, subject: Course):
-        print(f'SMS notification - student signed up for the course: {subject.students[-1].name}')
+        print(f'SMS notification - course name changed to: {subject.name}')
 
 
 class EmailNotifier(Observer):
 
     def update(self, subject: Course):
-        print(f'Email notification - student signed up for the course: {subject.students[-1].name}')
+        print(f'Email notification - course name changed to: {subject.name}')
