@@ -1,7 +1,10 @@
 import abc
 import sqlite3
+import threading
 
 from models import Student, Course, Category
+
+connection = sqlite3.connect('patterns.sqlite')
 
 
 class RecordNotFoundException(Exception):
@@ -147,15 +150,105 @@ class SqliteCourseMapper:
             raise DbDeleteException(e.args)
 
 
-connection = sqlite3.connect('patterns.sqlite')
-student_mapper = SqliteStudentMapper(connection)
-student_1 = student_mapper.find_by_id(2)
-print(student_1.__dict__)
+class MapperRegistry:
+    @staticmethod
+    def get_mapper(obj):
+        if isinstance(obj, Student):
+            return SqliteStudentMapper(connection)
 
-category_mapper = SqliteCategoryMapper(connection)
-category_1 = category_mapper.find_by_id(3)
-print(category_1.__dict__)
 
-course_mapper = SqliteCourseMapper(connection)
-course_1 = course_mapper.find_by_id(1)
-print(course_1.__dict__)
+class UnitOfWork:
+    current = threading.local
+
+    def __init__(self):
+        self.new_objects = []
+        self.dirty_objects = []
+        self.removed_objects = []
+
+    def register_new(self, obj):
+        self.new_objects.append(obj)
+
+    def register_dirty(self, obj):
+        self.dirty_objects.append(obj)
+
+    def register_removed(self, obj):
+        self.removed_objects.append(obj)
+
+    def commit(self):
+        self.insert_new()
+        self.update_dirty()
+        self.delete_removed()
+
+    def insert_new(self):
+        for obj in self.new_objects:
+            MapperRegistry.get_mapper(obj).insert(obj)
+
+    def update_dirty(self):
+        for obj in self.dirty_objects:
+            MapperRegistry.get_mapper(obj).update(obj)
+
+    def delete_removed(self):
+        for obj in self.removed_objects:
+            MapperRegistry.get_mapper(obj).delete(obj)
+
+    @staticmethod
+    def new_current():
+        __class__.set_current(UnitOfWork())
+
+    @classmethod
+    def set_current(cls, unit_of_work):
+        cls.current.unit_of_work = unit_of_work
+
+    @classmethod
+    def get_current(cls):
+        return cls.current.unit_of_work
+
+
+class DomainObject(metaclass=abc.ABC):
+    def mark_new(self):
+        UnitOfWork.get_current().register_new(self)
+
+    def mark_dirty(self):
+        UnitOfWork.get_current().register_dirty(self)
+
+    def mark_removed(self):
+        UnitOfWork.get_current().register_removed(self)
+
+
+try:
+    UnitOfWork.new_current()
+    new_student_1 = Student(None, 'Igor', 'Igorev', '808888', '4@gmail.com')
+    new_student_1.mark_new()
+
+    new_student_2 = Student(None, 'Fedor', 'Fedorov', '848488', '5@gmail.com')
+    new_student_2.mark_new()
+
+    student_mapper = SqliteStudentMapper(connection)
+    exists_student_1 = student_mapper.find_by_id(1)
+    exists_student_1.mark_dirty()
+    print(exists_student_1.name)
+    exists_student_1.name += ' Senior'
+    print(exists_student_1.name)
+
+    exists_student_2 = student_mapper.find_by_id(2)
+    exists_student_2.mark_removed()
+
+    print(UnitOfWork.get_current().__dict__)
+
+    UnitOfWork.get_current().commit()
+except Exception as e:
+    print(e.args)
+
+finally:
+    UnitOfWork.set_current(None)
+
+print(UnitOfWork.get_current())
+
+
+# category_mapper = SqliteCategoryMapper(connection)
+# category_1 = category_mapper.find_by_id(3)
+# print(category_1.__dict__)
+#
+# course_mapper = SqliteCourseMapper(connection)
+# course_1 = course_mapper.find_by_id(1)
+# print(course_1.__dict__)

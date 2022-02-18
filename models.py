@@ -1,3 +1,4 @@
+from database.data_mapper_and_unit_of_work import DomainObject
 from patterns.observer import Subject, Observer
 from patterns.prototype import PrototypeMixin
 
@@ -15,7 +16,7 @@ class Teacher(User):
     pass
 
 
-class Student(User, Observer):
+class Student(User, Observer, DomainObject):
 
     def __init__(self, id, name, surname, telephone, email):
         self.courses = []
