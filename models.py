@@ -16,11 +16,15 @@ class Teacher(User):
     pass
 
 
-class Student(User, Observer, DomainObject):
+class Student(User, Observer):
 
     def __init__(self, id, name, surname, telephone, email):
         self.courses = []
         super().__init__(id, name, surname, telephone, email)
+
+    def update(self, subject):
+        print(f'SMS notification for {self.name} - course name changed to: {subject.name}')
+        print(f'Email notification for {self.name} - course name changed to: {subject.name}')
 
 
 class SimpleFactory:
@@ -76,6 +80,7 @@ class Course(PrototypeMixin, Subject):
     def add_student(self, student: Student):
         self.students.append(student)
         student.courses.append(self)
+        self.attach(student)
 
     def change_course(self, new_name):
         setattr(self, 'name', new_name)
@@ -137,13 +142,13 @@ class TrainingSite:
         return None
 
 
-class SmsNotifier(Observer):
-
-    def update(self, subject: Course):
-        print(f'SMS notification - course name changed to: {subject.name}')
-
-
-class EmailNotifier(Observer):
-
-    def update(self, subject: Course):
-        print(f'Email notification - course name changed to: {subject.name}')
+# class SmsNotifier(Observer):
+#
+#     def update(self, subject: Course):
+#         print(f'SMS notification for {self.__class__.__name__} - course name changed to: {subject.name}')
+#
+#
+# class EmailNotifier(Observer):
+#
+#     def update(self, subject: Course):
+#         return f'Email notification - course name changed to: {subject.name}'

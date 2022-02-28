@@ -1,11 +1,11 @@
-from models import TrainingSite, SmsNotifier, EmailNotifier
+from models import TrainingSite
 from my_wsgi import render
 from products import products
 
 
 site = TrainingSite()
-sms_notifier = SmsNotifier()
-email_notifier = EmailNotifier()
+# sms_notifier = SmsNotifier()
+# email_notifier = EmailNotifier()
 
 
 def main_page(request):
@@ -90,8 +90,7 @@ def add_student_by_course(request):
         student_name = data['student_name']
         student = site.get_student(student_name)
         course.add_student(student)
-        course.attach(sms_notifier)
-        course.attach(email_notifier)
+        # student.update(course)
     return '200 OK', render('add_student.html', courses=site.courses, students=site.students)
 
 

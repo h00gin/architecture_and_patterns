@@ -2,6 +2,7 @@ import abc
 import sqlite3
 import threading
 
+from database.mapper_registry import MapperRegistry
 from models import Student, Course, Category
 
 connection = sqlite3.connect('patterns.sqlite')
@@ -26,24 +27,19 @@ class DbDeleteException(Exception):
     def __init__(self, message):
         super().__init__(f'Db delete error: {message}')
 
-#
-# class StudentMapper(metaclass=abc.ABC):
-#     @abc.abstractmethod
-#     def find_by_id(self, id_student):
-#         pass
-
 
 class SqliteStudentMapper:
-    def __init__(self, connection):
+    def __init__(self, connection, cls):
         self.connection = connection
         self.cursor = connection.cursor()
+        self.cls = cls
 
     def find_by_id(self, id_student):
         statement = f'SELECT ID, NAME, SURNAME, TELEPHONE, EMAIL FROM STUDENTS WHERE ID=?'
         self.cursor.execute(statement, (id_student,))
         result = self.cursor.fetchone()
         if result:
-            return Student(*result)
+            return self.cls(*result)
         else:
             raise RecordNotFoundException(f'record with id={id_student} not found')
 
@@ -73,16 +69,17 @@ class SqliteStudentMapper:
 
 
 class SqliteCategoryMapper:
-    def __init__(self, connection):
+    def __init__(self, connection, cls):
         self.connection = connection
         self.cursor = connection.cursor()
+        self.cls = cls
 
     def find_by_id(self, id_category):
         statement = f'SELECT ID, NAME FROM CATEGORIES WHERE ID=?'
         self.cursor.execute(statement, (id_category,))
         result = self.cursor.fetchone()
         if result:
-            return Category(*result)
+            return self.cls(*result)
         else:
             raise RecordNotFoundException(f'record with id={id_category} not found')
 
@@ -112,16 +109,17 @@ class SqliteCategoryMapper:
 
 
 class SqliteCourseMapper:
-    def __init__(self, connection):
+    def __init__(self, connection, cls):
         self.connection = connection
         self.cursor = connection.cursor()
+        self.cls = cls
 
     def find_by_id(self, id_course):
         statement = f'SELECT ID, NAME, CATEGORY_ID FROM COURSES WHERE ID=?'
         self.cursor.execute(statement, (id_course,))
         result = self.cursor.fetchone()
         if result:
-            return Course(*result)
+            return self.cls(*result)
         else:
             raise RecordNotFoundException(f'record with id={id_course} not found')
 
@@ -240,15 +238,15 @@ except Exception as e:
     print(e.args)
 
 finally:
-    UnitOfWork.set_current(None)
+    UnitOfWork.get_current(None)
 
 print(UnitOfWork.get_current())
 
 
-# category_mapper = SqliteCategoryMapper(connection)
-# category_1 = category_mapper.find_by_id(3)
-# print(category_1.__dict__)
-#
-# course_mapper = SqliteCourseMapper(connection)
-# course_1 = course_mapper.find_by_id(1)
-# print(course_1.__dict__)
+category_mapper = SqliteCategoryMapper(connection)
+category_1 = category_mapper.find_by_id(3)
+print(category_1.__dict__)
+
+course_mapper = SqliteCourseMapper(connection)
+course_1 = course_mapper.find_by_id(1)
+print(course_1.__dict__)
