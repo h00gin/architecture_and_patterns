@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}List of categories{% endblock %}
+{% block main %}
+    <h1>List of categories</h1>
+    <form method="post">
+        <ul>
+            {% for object in objects_list %}
+                <li>
+                    {{ object.name }}
+                    <span>{{ object.course_count() }} courses</span>
+                </li>
+            {% endfor %}
+        </ul>
+    <a class="link" href="/create_category/">Create category</a>
+    </form>
+{% endblock %}

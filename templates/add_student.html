@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Add student{% endblock %}
+{% block main %}
+    <h2>Add Student</h2>
+    <form method="post">
+        <div>
+            <label for="course">Course</label>
+            <select class="form" name="course_name" id="course">
+                {% for item in courses %}
+                    <option value="{{ item.name }}">{{ item.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="student">Student</label>
+            <select class="form-select" name="student_name" id="student">
+                {% for item in students %}
+                    <option value="{{ item.name }}">{{ item.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Add</button>
+    </form>
+    <a href="/student_list/">Students list</a>
+{% endblock %}
