@@ -1,4 +1,3 @@
-from database.data_mapper_and_unit_of_work import DomainObject
 from patterns.observer import Subject, Observer
 from patterns.prototype import PrototypeMixin
 
